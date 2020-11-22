@@ -10,7 +10,7 @@ include <torus.scad>
 include <stealth_lock.scad>
 
 // Parameters you can change.
-separated = false; // If true, lays out the component parts for FDM printing; if false, combines them.
+separated = true; // If true, lays out the component parts for FDM printing; if false, combines them.
 bellRadius = 18;
 topShellHeight= 5;
 wallThickness = 1;
@@ -51,14 +51,8 @@ module topShell() {
     union() {
       keyStuff();
       difference() {
-        union() {
-          torus(bellRadius-topShellHeight, topShellHeight);
-          cylinder(r=bellRadius-topShellHeight, h=topShellHeight);
-        }
-        union() {
-          torus(bellRadius-topShellHeight, topShellHeight-wallThickness);
-          cylinder(r=bellRadius-topShellHeight, h=topShellHeight-wallThickness);
-        }
+        hull() torus(bellRadius-topShellHeight, topShellHeight);
+        hull() torus(bellRadius-topShellHeight, topShellHeight-wallThickness);
         mz() cylinder(r=30, h=30);
         hull() {
           dx(-haspRadius) cylinder(r=haspThickness+gap, h=100);
@@ -68,10 +62,7 @@ module topShell() {
         rz(90) rx(90) dz(-30) cylinder(r=3.1, h=60);      
       }
     }
-    union() {
-      torus(bellRadius-topShellHeight, topShellHeight);
-      dz(-topShellHeight) cylinder(r=bellRadius-topShellHeight, h=2*topShellHeight);
-    }
+    hull() torus(bellRadius-topShellHeight, topShellHeight);
   }
 }
 
