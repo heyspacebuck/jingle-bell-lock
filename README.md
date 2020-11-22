@@ -1,5 +1,9 @@
 # 🎵 Jingle bell, jingle bell, jingle bell lock 🎵
 
+![Jingle bell render, assembled](jinglebell.png)
+
+![Jingle bell render, separated](jinglebell_separated.png)
+
 This is my design for a padlock disguised as a jingle bell. Use it for fursuits, petplay, shibari—whatever strikes your fancy.
 
 **This is a work in progress!** Please help me test and improve the design!
