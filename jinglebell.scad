@@ -23,8 +23,8 @@ $fn = 64; // Sets the resolution of the rendered part. Higher number means highe
 module main() {
   if (separated) {
     dz(topShellHeight) rx(180) topShell();
-    dz(haspThickness) dx(-40) rx(90) hasp();
-    dx(40) rx(180) bottomShell();
+    dz(haspThickness) dx(-2.4*bellRadius) rx(90) hasp();
+    dx(2.4*bellRadius) rx(180) bottomShell();
   } else {
     union() {
       topShell();
@@ -53,13 +53,13 @@ module topShell() {
       difference() {
         hull() torus(bellRadius-topShellHeight, topShellHeight);
         hull() torus(bellRadius-topShellHeight, topShellHeight-wallThickness);
-        mz() cylinder(r=30, h=30);
+        mz() cylinder(r=bellRadius, h=bellRadius);
         hull() {
-          dx(-haspRadius) cylinder(r=haspThickness+gap, h=100);
-          dx(haspRadius) cylinder(r=haspThickness+gap, h=100);
+          dx(-haspRadius) cylinder(r=haspThickness+gap, h=2*haspHeight);
+          dx(haspRadius) cylinder(r=haspThickness+gap, h=2*haspHeight);
         }
-        rx(90) dz(-30) cylinder(r=3.1, h=60);
-        rz(90) rx(90) dz(-30) cylinder(r=3.1, h=60);      
+        rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
+        rz(90) rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);      
       }
     }
     hull() torus(bellRadius-topShellHeight, topShellHeight);
@@ -70,21 +70,29 @@ module bottomShell() {
   difference() {
     sphere(r=bellRadius);
     sphere(r=bellRadius-wallThickness);
-    cylinder(r=40, h=40);
-    dz(-100) cylinder(r=3, h=100);
-    cube(center=true, [200, 3.2, 100]);
-    cube(center=true, [3.2, 200, 100]);
-    rx(90) dz(-30) cylinder(r=3.1, h=60);
-    rz(90) rx(90) dz(-30) cylinder(r=3.1, h=60);
+    cylinder(r=bellRadius, h=bellRadius);
+    dz(-bellRadius) cylinder(r=3, h=bellRadius);
+    dz(-bellRadius/2) cube(center=true, [2*bellRadius, 3.2, bellRadius]);
+    dz(-bellRadius/2) cube(center=true, [3.2, 2*bellRadius, bellRadius]);
+    rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
+    rz(90) rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
   }
 }
 
 module keyStuff() {
   rz(180) dy(5) difference() {
-    dy(-8.5) rx(90) cylinder(r=5, h=11);
+    union() {
+      dy(-8.5) rx(90) {
+        cylinder(r=5, h=11);
+        dx(-5) cube([10,5,11]);
+      }
+    }
     stealth_lock();
   }
-  dy(-5) rx(90) cylinder(r=5, h=6);
+  dy(-5) rx(90) {
+    cylinder(r=5, h=6);
+    dx(-5) cube([10,5,6]);
+  }
 }
 
 main();
