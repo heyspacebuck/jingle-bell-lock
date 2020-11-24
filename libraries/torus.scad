@@ -1,3 +1,5 @@
+include <handyfunctions.scad>;
+
 module torus(R, r, phi=360, rounded=false) {
   if (version_num() > 20151231) {
     union() {
