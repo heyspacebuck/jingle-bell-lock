@@ -8,9 +8,9 @@ This is my design for a padlock disguised as a jingle bell. Use it for fursuits,
 
 **This is a work in progress!** Please help me test and improve the design!
 
-## How to use the OpenSCAD file
+## How to use the OpenSCAD files
 
-The OpenSCAD file relies on custom libraries, which are included in the /libraries/ folder. This entire folder should be moved to the OpenSCAD documents folder. For example, if your OpenSCAD documents folder is `~/Documents/OpenSCAD`, then the contents of the folder should go into `~/Documents/OpenSCAD/libraries`.
+The main file is `jinglebell.scad`. The other three OpenSCAD files (`torus.scad`, `stealth_lock.scad`, and `handyfunctions.scad`) are custom libraries. You can put all four files in a single folder; however, I highly recommend putting the custom libraries in the /libraries/ subfolder inside the OpenSCAD documents folder. For example, if your OpenSCAD documents folder is `~/Documents/OpenSCAD`, then put the three custom libraries into `~/Documents/OpenSCAD/libraries`.
 
 Parameters you can change are present at the top of the main file, `jinglebell.scad`.
 
