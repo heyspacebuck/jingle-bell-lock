@@ -16,7 +16,7 @@ topShellHeight= 5;
 wallThickness = 1;
 gap = .75;
 haspRadius = 10;
-haspHeight = 5;
+haspHeight = 5.5;
 haspThickness = 1.8;
 $fn = 64; // Sets the resolution of the rendered part. Higher number means higher resolution.
 
