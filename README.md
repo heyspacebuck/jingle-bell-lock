@@ -16,6 +16,6 @@ Parameters you can change are present at the top of the main file, `jinglebell.s
 
 ## Printing and assembly
 
-For FDM printers, you will probably want to start with the file `jinglebell_separated.stl`. This splits the part into six parts that should be easy to print and assemble. Support on the build plate is probably necessary.
+For FDM printers, you will probably want to start with the file `jinglebell_separated.stl`. This lays the parts out flat and renders the interior of the bell in an FDM-friendly way.
 
 The locking module is a (fairly) commonly available "stealth lock" popularized by chastity cages like the Holy Trainer. It can be found on eBay, AliExpress, and sometimes Amazon by searching "stealth lock" or "chastity stealth lock". I *think* the original is this ["keyhole blocker" (Model ME)](https://www.burg.biz/international/p/locks-and-bolts/e7me/) manufactured by Burg-Wächter. This is the only "professional" use I have seen for this lock module.

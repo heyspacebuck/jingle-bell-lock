@@ -10,26 +10,31 @@ include <torus.scad>
 include <stealth_lock.scad>
 
 // Parameters you can change.
-separated = true; // If true, lays out the component parts for FDM printing; if false, combines them.
+separated = false; // If true, lays out the component parts for FDM printing; if false, combines them.
 bellRadius = 18;
-topShellHeight= 5;
-wallThickness = 1;
-gap = .75;
-haspRadius = 10;
-haspHeight = 5.5;
-haspThickness = 1.8;
+wallThickness = 2;
+gap = .75; // Amount of space to leave between hasp and bell
+haspRadius = 8; // The radius of the large bend in the hasp
+haspHeight = 20; // The straight portion of the hasp's length
+haspThickness = 1.8; // The radius of the hasp
+flatRadius = 9; // The radius of the flat portion at the top of the bell
+thickLeaves = false; // Selectively thickens parts of the bell leaves so they are easier to print on an FDM machine.
 $fn = 64; // Sets the resolution of the rendered part. Higher number means higher resolution.
+
+
+// Some trig calculations used in computing the size of the flat portion at the top of the bell
+theta = asin(flatRadius/bellRadius);
+flatHeight = flatRadius/tan(theta);
+interiorFlatRadius = sin(theta)*(bellRadius-wallThickness);
 
 module main() {
   if (separated) {
-    dz(topShellHeight) rx(180) topShell();
+    dz(flatHeight) rx(180) bell();
     dz(haspThickness) dx(-2.4*bellRadius) rx(90) hasp();
-    dx(2.4*bellRadius) rx(180) bottomShell();
   } else {
     union() {
-      topShell();
-      bottomShell();
-      dz(haspHeight/2+gap) hasp();
+      bell();
+      dz(haspHeight/2 + haspRadius - 8.1) hasp();
     }
   }
 }
@@ -39,59 +44,85 @@ module hasp() {
     dz(-haspHeight/2) dx(-haspRadius) cylinder(r=haspThickness, h=haspHeight);
     dz(-haspHeight/2) dx(haspRadius) cylinder(r=haspThickness, h=haspHeight);
     dz(haspHeight/2) rx(90) torus(haspRadius, haspThickness, 180);
-    dz(haspHeight/2) dx(-haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
-    dz(haspHeight/2) dx(haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
+//    dz(haspHeight/2) dx(-haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
+//    dz(haspHeight/2) dx(haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
     dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -110, rounded=true);
     mx() dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -30, rounded=true);
   }
 }
 
-module topShell() {
-  intersection() {
-    union() {
-      keyStuff();
-      difference() {
-        hull() torus(bellRadius-topShellHeight, topShellHeight);
-        hull() torus(bellRadius-topShellHeight, topShellHeight-wallThickness);
-        mz() cylinder(r=bellRadius, h=bellRadius);
-        hull() {
-          dx(-haspRadius) cylinder(r=haspThickness+gap, h=2*haspHeight);
-          dx(haspRadius) cylinder(r=haspThickness+gap, h=2*haspHeight);
-        }
-        rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
-        rz(90) rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);      
-      }
-    }
-    hull() torus(bellRadius-topShellHeight, topShellHeight);
+module truncatedSphere(R, r) {
+  difference() {
+    sphere(r=R);
+    dz(r/tan(asin(r/R))) cylinder(r=r, h=R);
   }
 }
 
-module bottomShell() {
+module bell() {
+  
+  intersection() {
+    keyStuff();
+    truncatedSphere(bellRadius, flatRadius);
+  }
+  
   difference() {
-    sphere(r=bellRadius);
-    sphere(r=bellRadius-wallThickness);
-    cylinder(r=bellRadius, h=bellRadius);
-    dz(-bellRadius) cylinder(r=3, h=bellRadius);
-    dz(-bellRadius/2) cube(center=true, [2*bellRadius, 3.2, bellRadius]);
-    dz(-bellRadius/2) cube(center=true, [3.2, 2*bellRadius, bellRadius]);
+    union() {
+      difference() {
+        // Main body: a truncated sphere
+        truncatedSphere(bellRadius, flatRadius);
+    
+        // Smaller truncated sphere to hollow out the main body
+        truncatedSphere(bellRadius-wallThickness, interiorFlatRadius);
+      }
+      if (thickLeaves) {
+        supports();
+      }
+    }
+    
+    // Bell holes
     rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
     rz(90) rx(90) dz(-bellRadius) cylinder(r=3.1, h=2*bellRadius);
+    
+    // Bell slits
+    rx(180) dy(-bellRadius) dx(-1.55) cube([3.1, 2*bellRadius, bellRadius]);
+    rz(90) rx(180) dy(-bellRadius) dx(-1.55) cube([3.1, 2*bellRadius, bellRadius]);
+    
+    
+    // A slot for the hasp to enter
+    hull() {
+      dx(-haspRadius) cylinder(r=haspThickness+gap, h=bellRadius);
+      dx(haspRadius) cylinder(r=haspThickness+gap, h=2*bellRadius);
+    }
+    
+//    dz(-bellRadius) cylinder(r=bellRadius, h=bellRadius);
+  }
+}
+
+module supports() {
+  intersection() {
+    sphere(r=bellRadius);
+    union() {
+      dx(1.55) dy(1.55) dz(wallThickness) rz(45) dx(bellRadius) dy(-bellRadius*sqrt(2)/2) ry(135) cube(bellRadius*sqrt(2));
+      rz(90) dx(1.55) dy(1.55) dz(wallThickness) rz(45) dx(bellRadius) dy(-bellRadius*sqrt(2)/2) ry(135) cube(bellRadius*sqrt(2));
+      rz(180) dx(1.55) dy(1.55) dz(wallThickness) rz(45) dx(bellRadius) dy(-bellRadius*sqrt(2)/2) ry(135) cube(bellRadius*sqrt(2));
+      rz(270) dx(1.55) dy(1.55) dz(wallThickness) rz(45) dx(bellRadius) dy(-bellRadius*sqrt(2)/2) ry(135) cube(bellRadius*sqrt(2));
+    }
   }
 }
 
 module keyStuff() {
-  rz(180) dy(5) difference() {
+  rz(180) difference() {
     union() {
-      dy(-8.5) rx(90) {
-        cylinder(r=5, h=11);
-        dx(-5) cube([10,5,11]);
+      dy(bellRadius-21.5) rx(90) {
+        cylinder(r=5, h=bellRadius);
+        dx(-5) cube([10, bellRadius, bellRadius]);
       }
     }
-    stealth_lock();
+    dy(bellRadius-13) stealth_lock();
   }
   dy(-5) rx(90) {
-    cylinder(r=5, h=6);
-    dx(-5) cube([10,5,6]);
+    cylinder(r=5, h=7);
+    dx(-5) cube([10, bellRadius, 7]);
   }
 }
 
