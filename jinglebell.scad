@@ -18,7 +18,8 @@ haspRadius = 8; // The radius of the large bend in the hasp
 haspHeight = 24; // The straight portion of the hasp's length
 haspThickness = 2; // The radius of the hasp
 flatRadius = 12; // The radius of the flat portion at the top of the bell
-thickLeaves = true; // Selectively thickens parts of the bell leaves so they are easier to print on an FDM machine.
+thickLeaves = false; // Selectively thickens parts of the bell leaves so they are easier to print on an FDM machine.
+squareHasp = false; // If true, gives the hasp a square cross-section that makes it more FDM-friendly.
 $fn = 64; // Sets the resolution of the rendered part. Higher number means higher resolution.
 
 
@@ -26,6 +27,11 @@ $fn = 64; // Sets the resolution of the rendered part. Higher number means highe
 theta = asin(flatRadius/bellRadius);
 flatHeight = flatRadius/tan(theta);
 interiorFlatRadius = sin(theta)*(bellRadius-wallThickness);
+
+
+
+main();
+
 
 module main() {
   if (separated) {
@@ -40,14 +46,30 @@ module main() {
 }
 
 module hasp() {
-  union() {
-    dz(-haspHeight/2) dx(-haspRadius) cylinder(r=haspThickness, h=haspHeight);
-    dz(-haspHeight/2) dx(haspRadius) cylinder(r=haspThickness, h=haspHeight);
-    dz(haspHeight/2) rx(90) torus(haspRadius, haspThickness, 180);
-//    dz(haspHeight/2) dx(-haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
-//    dz(haspHeight/2) dx(haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
-    dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -110, rounded=true);
-    mx() dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -30, rounded=true);
+  if (squareHasp) {
+    union() {
+      dx(-haspRadius) cube([2*haspThickness, 2*haspThickness, haspHeight], center=true);
+      dx(haspRadius) cube([2*haspThickness, 2*haspThickness, haspHeight], center=true);
+      dz(haspHeight/2) rx(90) rotate_extrude(angle=180) {
+        dx(haspRadius) square(2*haspThickness, center=true);
+      }
+  //    dz(haspHeight/2) dx(-haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
+  //    dz(haspHeight/2) dx(haspRadius) sy(0.5) cylinder(r=2*haspThickness, h=wallThickness);
+      dz(-haspHeight/2) rx(90) rotate_extrude(angle=-110) {
+        dx(haspRadius) square(2*haspThickness, center=true);
+      }
+      mx() dz(-haspHeight/2) rx(90) rotate_extrude(angle=-30) {
+        dx(haspRadius) square(2*haspThickness, center=true);
+      }
+    }
+  } else {
+    union() {
+      dz(-haspHeight/2) dx(-haspRadius) cylinder(r=haspThickness, h=haspHeight);
+      dz(-haspHeight/2) dx(haspRadius) cylinder(r=haspThickness, h=haspHeight);
+      dz(haspHeight/2) rx(90) torus(haspRadius, haspThickness, 180);
+      dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -110, rounded=true);
+      mx() dz(-haspHeight/2) rx(90) torus(haspRadius, haspThickness, -30, rounded=true);
+    }
   }
 }
 
@@ -124,5 +146,3 @@ module keyStuff() {
     dx(-5) cube([10, bellRadius, 7]);
   }
 }
-
-main();
