@@ -6,7 +6,7 @@
 
 This is my design for a padlock disguised as a jingle bell. Use it for fursuits, petplay, shibari—whatever strikes your fancy.
 
-**This is a work in progress!** Please help me test and improve the design!
+**This is a work in progress!** Please help me test and improve the design! **There is a newer model with lots of improvements, but it's not in the repo yet; let me know if you want to help test it**
 
 ## How to use the OpenSCAD files
 
